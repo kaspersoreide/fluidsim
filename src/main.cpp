@@ -8,9 +8,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
-
-#include "particles.h"
-#include "random.h"
+#include "simulator.h"
 
 using namespace std;
 using namespace glm;
@@ -20,21 +18,24 @@ const int RESX = 720;
 const int RESY = 720;
 
 GLFWwindow* window;
-bool closed = false;
-ParticleCluster* particles;
+bool closed = false, paused = true;
+Simulator* sim;
+vec2 mouse;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	if (key == GLFW_KEY_SPACE) {
-		if (action == GLFW_PRESS) particles->toggleGravity();
-	}
+	
 	if (key == GLFW_KEY_ESCAPE) closed = true;
+
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) paused ^= 1;
+
+    if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+        float val[4] = {0.0, 0.0, 0.0, 0.0};
+        sim->setPixel(mouse.x / RESX, 1.0f - mouse.y / RESY, (void*)&val);
+    }
 }
 
 void cursorCallback(GLFWwindow* window, double xpos, double ypos) {
-	float x = float(xpos);
-	float y = float(ypos);
-
-	particles->setOrigin(2.f * x / RESX - 1.f, -2.f * y / RESY + 1.f);
+	mouse = vec2(static_cast<float>(xpos), static_cast<float>(ypos));
 }
 
 int init() {
@@ -67,8 +68,6 @@ int init() {
 	//don't need depth test for 2d rendering
 	glDisable(GL_DEPTH_TEST);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-	//width of the particles
-	glLineWidth(3.f);
 
 	int error = glGetError();
 
@@ -84,14 +83,11 @@ int init() {
 
 int main(void) {
 	if (init() == -1) return -1;
-	ParticleCluster::loadPrograms();
-	//argument is number of particles
-	particles = new ParticleCluster(65535);
+	sim = new Simulator(64, 64);
 	while (!glfwWindowShouldClose(window) && !closed) {
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		particles->compute();
-		particles->render();
+        if (!paused) sim->compute();
+		sim->render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

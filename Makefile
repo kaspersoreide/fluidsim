@@ -7,7 +7,7 @@ INC = -Iheaders -I/usr/lib/glfw/include -I/usr/lib/glew/include -I/usr/lib/glm
 LIB = /usr/lib/glfw/src/libglfw3.a /usr/lib/glew/lib/libGLEW.a -lpthread -lm -lz -lGL -lX11 -lXext -lXfixes -ldl
 
 #for every .cpp file in project, there has to be a .o file here:
-_OBJS = main.o loadshaders.o 
+_OBJS = main.o loadshaders.o simulator.o framebuffer.o
 
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
