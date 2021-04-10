@@ -14,8 +14,8 @@ using namespace std;
 using namespace glm;
 
 //resolution of window in pixels
-const int RESX = 720;
-const int RESY = 720;
+int RESX = 720;
+int RESY = 720;
 
 GLFWwindow* window;
 bool closed = false, paused = true;
@@ -29,7 +29,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) paused ^= 1;
 
     if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-        float val[4] = {0.0, 0.0, 0.0, 0.0};
+        float val[4] = {1.0, 0.0, 0.0, 0.0};
         sim->setPixel(mouse.x / RESX, 1.0f - mouse.y / RESY, (void*)&val);
     }
 }

@@ -5,7 +5,8 @@
 //helper enum for different texture types
 enum FramebufferType{
     FB_LINEAR_CLAMP,
-    FB_NEAREST_REPEAT
+    FB_NEAREST_REPEAT,
+    FB_LINEAR_REPEAT
 };
 
 class Framebuffer {
