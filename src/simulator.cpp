@@ -52,8 +52,12 @@ void Simulator::compute() {
 
 
 void Simulator::setPixel(float x, float y, void *val) {
-    int tx = x * width;
+    /*int tx = x * width;
     int ty = y * height;
     glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, tx, ty, 1, 1, GL_RGBA, GL_FLOAT, val);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, tx, ty, 1, 1, GL_RGBA, GL_FLOAT, val);*/
+    fb[0]->bind();
+    glRasterPos2f(x, y);
+    glDrawPixels(1, 1, GL_RGBA, GL_FLOAT, val);
+    fb[0]->unbind();
 }
