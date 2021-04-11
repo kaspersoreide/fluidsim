@@ -4,6 +4,8 @@
  *  
  *  each pixel stores pressure and velocity, so whole texture is a vector field
  *  pixel's x and y values are velocity, and z is pressure
+ *  This shader computes new velocity by advecting and diffusing velocity
+ *  The result is not divergence free and must be fixed in another shader
  */
 
 in vec2 uv;
@@ -20,6 +22,9 @@ vec4 left = texture(tex, vec2(uv.x - delta.x, uv.y));
 vec4 right = texture(tex, vec2(uv.x + delta.x, uv.y));
 vec4 center = texture(tex, uv);
 
+float dt = 0.01;
+float viscosity = 0.00007;
+
 vec2 getGradient() {
     //gradient of pressure
     return vec2 (
@@ -34,21 +39,30 @@ float getDivergence() {
     return dudx + dvdy;
 }
 
-float getLaplacian() {
+float getLaplacian(int idx) {
     return (
-        (left.z - 2 * center.z + right.z) / (delta.x*delta.x)
-        + (up.z - 2 * center.z + down.z) / (delta.y*delta.y)
+        (left[idx] - 2 * center[idx] + right[idx]) / (delta.x*delta.x)
+        + (up[idx] - 2 * center[idx] + down[idx]) / (delta.y*delta.y)
     );
 }
 
-void main() {
-    float viscosity = 0.03;
-    float density = 0.1;
-    vec2 force(0.0);
-    if (distance(uv, vec2(0.5, 0.5)) < delta.x) force = vec2(0.1, 0.0);
-    
+vec2 advectVelocity() {
+    vec2 u = center.xy;
+    return texture(tex, uv - u * dt).xy;
+}
 
-    float dt = 0.01;
-    float div = getDivergence();
+vec2 diffuseVelocity() {
+    vec2 del2 = vec2(getLaplacian(0), getLaplacian(1));
+    return viscosity * dt * del2;
+}
+
+void main() {
+    float density = 0.1;
+    vec2 force = vec2(0.0);
+    if (distance(uv, vec2(0.5, 0.5)) < 0.3) force = vec2(0.2, 0.2 * cos(30.0 * uv.x));
+    vec2 w = advectVelocity();
+    w += diffuseVelocity();
+    w += force * dt;
+    FragColor = vec4(w, center.zw);
 
 }
