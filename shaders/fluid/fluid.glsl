@@ -59,10 +59,9 @@ vec2 diffuseVelocity() {
 void main() {
     float density = 0.1;
     vec2 force = vec2(0.0);
-    if (distance(uv, vec2(0.5, 0.5)) < 0.3) force = vec2(0.2, 0.2 * cos(30.0 * uv.x));
+    if (distance(uv, vec2(0.5, 0.5)) < delta.x) force = vec2(0.2, 0.2 * cos(30.0 * uv.x));
     vec2 w = advectVelocity();
     w += diffuseVelocity();
     w += force * dt;
     FragColor = vec4(w, center.zw);
-
 }
