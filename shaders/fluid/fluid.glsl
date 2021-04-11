@@ -23,7 +23,7 @@ vec4 right = texture(tex, vec2(uv.x + delta.x, uv.y));
 vec4 center = texture(tex, uv);
 
 float dt = 0.01;
-float viscosity = 0.00007;
+float viscosity = 0.000019;
 
 vec2 getGradient() {
     //gradient of pressure
@@ -46,9 +46,9 @@ float getLaplacian(int idx) {
     );
 }
 
-vec2 advectVelocity() {
+vec4 advect() {
     vec2 u = center.xy;
-    return texture(tex, uv - u * dt).xy;
+    return texture(tex, uv - u * dt);
 }
 
 vec2 diffuseVelocity() {
@@ -56,12 +56,27 @@ vec2 diffuseVelocity() {
     return viscosity * dt * del2;
 }
 
+float diffuseDye() {
+    return viscosity * dt * getLaplacian(3);
+}
+
+float getCurl() {
+    return (up.x - down.x) / (2 * delta.x) - (left.y - right.y) / (2 * delta.y);
+}
+
+vec2 curlVelocity() {
+    vec2 grad = getGradient();
+    return delta.x * dt * center.z * vec2(grad.y, -grad.x);
+}
+
 void main() {
-    float density = 0.1;
     vec2 force = vec2(0.0);
-    if (distance(uv, vec2(0.5, 0.5)) < delta.x) force = vec2(0.2, 0.2 * cos(30.0 * uv.x));
-    vec2 w = advectVelocity();
+    if (distance(uv, vec2(0.5, 0.5)) < 0.1) force = vec2(1.5, 1.5);
+    vec4 advected = advect();
+    vec2 w = advected.xy;
     w += diffuseVelocity();
     w += force * dt;
-    FragColor = vec4(w, center.zw);
+    w += curlVelocity();
+
+    FragColor = vec4(w, getCurl(), advected.w);
 }

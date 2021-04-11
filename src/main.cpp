@@ -29,7 +29,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) paused ^= 1;
 
     if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-        float val[4] = {1.0, 0.0, 0.0, 0.0};
+        float val[4] = {0.0, 0.0, 0.0, 1.0};
         sim->setPixel(mouse.x / RESX, 1.0f - mouse.y / RESY, (void*)&val);
     }
 }
@@ -83,7 +83,7 @@ int init() {
 
 int main(void) {
 	if (init() == -1) return -1;
-	sim = new Simulator(256, 256);
+	sim = new Simulator(512, 512);
 	while (!glfwWindowShouldClose(window) && !closed) {
 		glClear(GL_COLOR_BUFFER_BIT);
         if (!paused) sim->compute();
