@@ -12,7 +12,7 @@ public:
     int width, height;
     void render();
     void compute();
-    void advect(Framebuffer* target);
+    void advect(Framebuffer* back, Framebuffer* front);
     void setPixel(float x, float y, void *val);
     void swapBuffers();
 };

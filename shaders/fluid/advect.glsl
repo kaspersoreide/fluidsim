@@ -56,7 +56,7 @@ vec2 random2(vec2 seed) {
 
 vec2 randomVel() {
     vec2 seed = uv + center.xy;
-    return 2.0 * random2(seed) * dt;
+    return 1.0 * random2(seed) * dt;
 }
 
 vec2 getGradient() {
@@ -79,11 +79,11 @@ vec2 curlVelocity() {
 
 void main() {
     vec2 u = center.xy;
-    vec2 force = vec2(0.0);
-    if (distance(uv, vec2(0.5)) < 0.1) force = vec2(1.5, 0.0);
+    vec2 force = 0.3 * vec2(0.0, sin(100.0 * uv.x));
+    //if (distance(uv, vec2(0.05)) < 0.1) force = vec2(1.5, 0.0);
     //else if (distance(uv, vec2(0.8)) < 0.05) force = vec2(-22.5, 0.0);
     vec4 texthere = texture(tex, uv - u * dt);
-    vec2 u_next = texthere.xy + force * dt + randomVel(); //+ curlVelocity(); 
+    vec2 u_next = texthere.xy + force * dt  + randomVel(); //+ curlVelocity(); 
     u_next *= 0.999;
     FragColor = vec4(u_next, center.z, getCurl());
 }

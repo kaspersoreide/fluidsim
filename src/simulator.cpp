@@ -24,7 +24,7 @@ Simulator::Simulator(int width, int height) : width(width), height(height) {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
-    for (int i = 0; i < 2; i++) fb[i] = new Framebuffer(width, height, FB_LINEAR_REPEAT);
+    for (int i = 0; i < 2; i++) fb[i] = new Framebuffer(width, height, GL_RGBA32F, GL_REPEAT, GL_LINEAR);
 
     renderProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/frag.glsl");
     advectProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/advect.glsl");
@@ -37,7 +37,7 @@ Simulator::Simulator(int width, int height) : width(width), height(height) {
 void Simulator::render() {
     glUseProgram(renderProgram);
     glBindVertexArray(vertexArray);
-    glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
+    glBindTexture(GL_TEXTURE_2D, fb[1]->texture);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -86,7 +86,7 @@ void Simulator::compute() {
     // For the viscous diffusion equation, both x and b represent u, a = (dx)2/ndt, and b = 4 + a.
     glUniform1f(glGetUniformLocation(pressureProgram, "alpha"), -dx*dx);
     glUniform1f(glGetUniformLocation(pressureProgram, "beta"), 4.0f);
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < 10; i++) {
         fb[1]->bind();
         glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -120,28 +120,24 @@ void Simulator::setPixel(float x, float y, void *val) {
     //fb[0]->unbind();
 }
 
-void Simulator::advect(Framebuffer* target) {
+void Simulator::advect(Framebuffer* back, Framebuffer* front) {
     //this function uses the simulator's velocity field to move the entire image in target
     //binds the texture in target and then blits result into it
     //this needs to be done because rendering a texture to itself produces undefined behaviour
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, target->texture);
-    fb[1]->bind();
-    glViewport(0, 0, width, height);
+    glBindTexture(GL_TEXTURE_2D, back->texture);
+    front->bind();
+    glViewport(0, 0, front->width, front->height);
     glUseProgram(advectorProgram);
     float dt = 0.01f;
     glUniform1f(glGetUniformLocation(advectorProgram, "dt"), dt);
     glBindVertexArray(vertexArray);
+    glUniform1i(glGetUniformLocation(advectorProgram, "vel_tex"), 0);
+    glUniform1i(glGetUniformLocation(advectorProgram, "img_tex"), 1);
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    fb[1]->unbind();
+    front->unbind();
     glViewport(0, 0, RESX, RESY);
-    glBlitNamedFramebuffer(
-        fb[1]->framebuffer, target->framebuffer,
-        0, 0, width, height,
-        0, 0, target->width, target->height, 
-        GL_COLOR_BUFFER_BIT, GL_NEAREST   
-    );
     glActiveTexture(GL_TEXTURE0);
 }

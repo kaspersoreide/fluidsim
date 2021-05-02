@@ -9,6 +9,6 @@ uniform sampler2D img_tex;
 uniform float dt;
 
 void main() {
-    vec2 u = texture(vel_tex, uv);
+    vec2 u = texture(vel_tex, uv).xy;
     FragColor = texture(img_tex, uv - u * dt);
 }
