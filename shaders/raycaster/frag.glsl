@@ -100,16 +100,16 @@ void main() {
 	vec3 raypos = cPos;
 	float dist = 1.0;
 	vec2 mandelinfo;
-	float gravConstant = -0.001;
+	float gravConstant = -0.01;
 	while (dist > 0.0001 && raysteps < 50) {
 		if (dir.y < 0.0 && raypos.y < 0.0) {
 			dir.y *= -1;
 			raysteps = 30;
 			raypos.y *= -1.0;
 		} 
-		dist = distToCube(raypos);
-		//dir += gravConstant * vecToSphere(raypos) / (dist*dist);
-		//dir = normalize(dir);
+		dist = distSphere(raypos);
+		dir += gravConstant * vecToSphere(raypos) / (dist*dist);
+		dir = normalize(dir);
 		raypos += dist * dir;
 		raysteps += 1;
 	}
@@ -118,9 +118,9 @@ void main() {
 	//float reflection = clamp(dot(normal, lightdir), 0.2, 1.0);
 	float shade = exp(-0.01 * distance(raypos, cPos));
 	FragColor = shade * vec4(
-		0.5 + 0.5 * cos(time + 0.1 * float(raysteps)),
-		0.5 + 0.5 * sin(time + 0.1 * float(raysteps)),
-		0.5 + 0.5 * cos(0.452 * time + 0.3 * float(raysteps)),
+		0.5 + 0.5 * cos(time + 0.002 * raypos.x * raypos.y + float(raysteps)),
+		0.5 + 0.5 * sin(time + 0.001 * 20.0 * raypos.z + 0.1 * float(raysteps)),
+		0.5 + 0.5 * cos(0.452 * time + 0.3 * float(raysteps) -0.001 *  raypos.x * raypos.z),
 		1.0
 	);
 }

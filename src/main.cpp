@@ -23,7 +23,7 @@ typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::duration<float> fsec;
 
 //resolution of window in pixels
-int RESX = 720;
+int RESX = 1280;
 int RESY = 720;
 
 GLFWwindow* window;
@@ -31,6 +31,8 @@ bool closed = false, paused = true;
 Simulator* sim;
 Player* player;
 vec2 mouse;
+float blend_amount = 0.9f;
+int iterations = 10;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	
@@ -57,6 +59,18 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
 		player->jump();
 	}
+    if (key == GLFW_KEY_UP) {
+		if (action == GLFW_PRESS) blend_amount += 0.005f;
+	}
+    if (key == GLFW_KEY_DOWN) {
+		if (action == GLFW_PRESS) blend_amount -= 0.005f;
+	}
+    if (key == GLFW_KEY_LEFT) {
+		if (action == GLFW_PRESS) iterations -= 1;
+	}
+    if (key == GLFW_KEY_RIGHT) {
+        if (action == GLFW_PRESS) iterations += 1;
+    }
 }
 
 void cursorCallback(GLFWwindow* window, double xpos, double ypos) {
@@ -76,7 +90,7 @@ int init() {
 	}
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow(RESX, RESY, "Test", NULL, NULL);
+	window = glfwCreateWindow(RESX, RESY, "Test", glfwGetPrimaryMonitor(), NULL);
 	if (window == NULL) {
 		fprintf(stderr, "Failed to open GLFW window.\n");
 		getchar();
@@ -114,7 +128,7 @@ int init() {
 
 int main(void) {
 	if (init() == -1) return -1;
-	sim = new Simulator(256, 256);
+	sim = new Simulator(512, 512);
     player = new Player();
 	Raycaster raycaster;
 	raycaster.setResolution(RESX, RESY);
@@ -132,13 +146,14 @@ int main(void) {
         auto t1 = Time::now();
 		fsec t = t1 - t0;
         
-        if (!paused) sim->compute();
+        if (!paused) sim->compute(iterations);
         ray_fb1.bind();
         player->move();
+        raycaster.setTime(t.count());
         raycaster.render(player->getModel());
         ray_fb1.unbind(); 
         sim->advect(screen.fb, &ray_fb2);
-        float blend_amount = 0.99f * (0.5f * sinf(0.05f * t.count()) + 0.5f);
+        //float blend_amount = 0.9f;// * (0.5f * sinf(0.05f * t.count()) + 0.5f);
         screen.blend(&ray_fb1, &ray_fb2, blend_amount);
 
 		glfwSwapBuffers(window);

@@ -11,7 +11,7 @@ public:
     Simulator(int width, int height);
     int width, height;
     void render();
-    void compute();
+    void compute(int iterations);
     void advect(Framebuffer* back, Framebuffer* front);
     void setPixel(float x, float y, void *val);
     void swapBuffers();
