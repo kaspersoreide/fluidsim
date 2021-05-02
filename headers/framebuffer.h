@@ -15,4 +15,5 @@ public:
 	void bind(){ glBindFramebuffer(GL_FRAMEBUFFER, framebuffer); }
 	void unbind(){ glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 	GLuint texture, depthbuffer, framebuffer;
+    GLsizei width, height;
 };

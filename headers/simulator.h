@@ -6,12 +6,13 @@
 class Simulator {
 public:
     GLuint renderProgram, advectProgram, diffuseProgram, 
-        pressureProgram, projectProgram, vertexArray;
+        pressureProgram, projectProgram, advectorProgram, vertexArray;
     Framebuffer *fb[2];
     Simulator(int width, int height);
     int width, height;
     void render();
     void compute();
+    void advect(Framebuffer* target);
     void setPixel(float x, float y, void *val);
     void swapBuffers();
 };

@@ -31,6 +31,7 @@ Simulator::Simulator(int width, int height) : width(width), height(height) {
     diffuseProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/diffuse.glsl");
     pressureProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/solvepressure.glsl");
     projectProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/project.glsl");
+    advectorProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/advector.glsl");
 }
 
 void Simulator::render() {
@@ -117,4 +118,30 @@ void Simulator::setPixel(float x, float y, void *val) {
     //glRasterPos2i(tx, ty);
     //glDrawPixels(1, 1, GL_RGBA, GL_FLOAT, val);
     //fb[0]->unbind();
+}
+
+void Simulator::advect(Framebuffer* target) {
+    //this function uses the simulator's velocity field to move the entire image in target
+    //binds the texture in target and then blits result into it
+    //this needs to be done because rendering a texture to itself produces undefined behaviour
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, target->texture);
+    fb[1]->bind();
+    glViewport(0, 0, width, height);
+    glUseProgram(advectorProgram);
+    float dt = 0.01f;
+    glUniform1f(glGetUniformLocation(advectorProgram, "dt"), dt);
+    glBindVertexArray(vertexArray);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    fb[1]->unbind();
+    glViewport(0, 0, RESX, RESY);
+    glBlitNamedFramebuffer(
+        fb[1]->framebuffer, target->framebuffer,
+        0, 0, width, height,
+        0, 0, target->width, target->height, 
+        GL_COLOR_BUFFER_BIT, GL_NEAREST   
+    );
+    glActiveTexture(GL_TEXTURE0);
 }

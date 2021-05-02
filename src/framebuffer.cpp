@@ -1,6 +1,6 @@
 #include "framebuffer.h"
 
-Framebuffer::Framebuffer(GLsizei width, GLsizei height, FramebufferType t) {
+Framebuffer::Framebuffer(GLsizei width, GLsizei height, FramebufferType t) : width(width), height(height) {
 	//gen texture
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
