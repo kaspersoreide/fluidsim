@@ -83,7 +83,7 @@ int init() {
 
 int main(void) {
 	if (init() == -1) return -1;
-	sim = new Simulator(256, 256);
+	sim = new Simulator(512, 512);
 	while (!glfwWindowShouldClose(window) && !closed) {
 		glClear(GL_COLOR_BUFFER_BIT);
         if (!paused) sim->compute();

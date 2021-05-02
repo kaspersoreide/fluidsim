@@ -85,7 +85,7 @@ void Simulator::compute() {
     // For the viscous diffusion equation, both x and b represent u, a = (dx)2/ndt, and b = 4 + a.
     glUniform1f(glGetUniformLocation(pressureProgram, "alpha"), -dx*dx);
     glUniform1f(glGetUniformLocation(pressureProgram, "beta"), 4.0f);
-    for (int i = 0; i < 80; i++) {
+    for (int i = 0; i < 40; i++) {
         fb[1]->bind();
         glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
