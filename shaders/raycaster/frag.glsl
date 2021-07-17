@@ -108,8 +108,8 @@ void main() {
 			raypos.y *= -1.0;
 		} 
 		dist = distSphere(raypos);
-		dir += gravConstant * vecToSphere(raypos) / (dist*dist);
-		dir = normalize(dir);
+		//dir += gravConstant * vecToSphere(raypos) / (dist*dist);
+		//dir = normalize(dir);
 		raypos += dist * dir;
 		raysteps += 1;
 	}
