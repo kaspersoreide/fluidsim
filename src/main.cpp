@@ -132,8 +132,8 @@ int main(void) {
     player = new Player();
 	Raycaster raycaster;
 	raycaster.setResolution(RESX, RESY);
-    Framebuffer ray_fb1(RESX, RESY, GL_RGBA, GL_REPEAT, GL_LINEAR);
-    Framebuffer ray_fb2(RESX, RESY, GL_RGBA, GL_REPEAT, GL_LINEAR);
+    Framebuffer ray_fb1(RESX, RESY, GL_RGBA, GL_REPEAT, GL_LINEAR, GL_UNSIGNED_BYTE, GL_RGBA);
+    Framebuffer ray_fb2(RESX, RESY, GL_RGBA, GL_REPEAT, GL_LINEAR, GL_UNSIGNED_BYTE, GL_RGBA);
     Screen screen("shaders/screen/blend.glsl");
 
     ray_fb1.bind();

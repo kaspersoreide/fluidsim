@@ -3,12 +3,12 @@
 extern int RESX;
 extern int RESY;
 
-Framebuffer::Framebuffer(GLsizei width, GLsizei height, GLint internalformat, GLint wrap_method, GLint interp) : width(width), height(height) {
+Framebuffer::Framebuffer(GLsizei width, GLsizei height, GLint internalformat, GLint wrap_method, GLint interp, GLenum type, GLenum format) : width(width), height(height) {
 	//gen texture
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, interp);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, interp);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_method);
@@ -25,6 +25,10 @@ Framebuffer::Framebuffer(GLsizei width, GLsizei height, GLint internalformat, GL
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "error! incomplete framebuffer!\n";
+    }
 
 	//unbind the framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

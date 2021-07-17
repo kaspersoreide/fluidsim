@@ -24,7 +24,10 @@ Simulator::Simulator(int width, int height) : width(width), height(height) {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
-    for (int i = 0; i < 2; i++) fb[i] = new Framebuffer(width, height, GL_RGBA32F, GL_REPEAT, GL_LINEAR);
+    for (int i = 0; i < 2; i++) {
+        fb[i] = new Framebuffer(width, height, GL_RGBA32F, GL_REPEAT, GL_LINEAR, GL_FLOAT, GL_RGBA);
+        warp_fb[i] = new Framebuffer(width, height, GL_RG16F, GL_REPEAT, GL_LINEAR, GL_FLOAT, GL_RG);
+    } 
 
     renderProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/frag.glsl");
     advectProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/advect.glsl");
@@ -32,6 +35,7 @@ Simulator::Simulator(int width, int height) : width(width), height(height) {
     pressureProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/solvepressure.glsl");
     projectProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/project.glsl");
     advectorProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/advector.glsl");
+    warpProgram = loadShaders("shaders/fluid/vert.glsl", "shaders/fluid/warpmap.glsl");
 }
 
 void Simulator::render() {
@@ -41,11 +45,11 @@ void Simulator::render() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Simulator::swapBuffers() {
+void Simulator::swapBuffers(Framebuffer* fb1, Framebuffer* fb2) {
     //swap framebuffers
-    Framebuffer *tmp = fb[1];
-    fb[1] = fb[0];
-    fb[0] = tmp;
+    Framebuffer *tmp = fb1;
+    fb1 = fb2;
+    fb2 = tmp;
 }
 
 void Simulator::compute(int iterations) {
@@ -62,7 +66,7 @@ void Simulator::compute(int iterations) {
     fb[1]->bind();
     glDrawArrays(GL_TRIANGLES, 0, 6);
     fb[1]->unbind();
-    swapBuffers();
+    swapBuffers(fb[0], fb[1]);
     
     /*
     glUseProgram(diffuseProgram);
@@ -91,7 +95,7 @@ void Simulator::compute(int iterations) {
         glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         fb[1]->unbind();
-        swapBuffers();
+        swapBuffers(fb[0], fb[1]);
     }
     
     glUseProgram(projectProgram);
@@ -100,8 +104,24 @@ void Simulator::compute(int iterations) {
     glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     fb[1]->unbind();
-    swapBuffers();
+    swapBuffers(fb[0], fb[1]);
+    /*
+    //warp warpmap
+    glUseProgram(warpProgram);
+    glUniform1f(glGetUniformLocation(warpProgram, "dt"), dt);
+    glUniform1f(glGetUniformLocation(warpProgram, "weight"), 0.1f);
+    warp_fb[1]->bind();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
+    glUniform1i(glGetUniformLocation(warpProgram, "vel_tex"), 0);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, warp_fb[0]->texture);
+    glUniform1i(glGetUniformLocation(warpProgram, "warp_tex"), 1);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    warp_fb[1]->unbind();
     
+*/
+
 
     glViewport(0, 0, RESX, RESY);    
 }

@@ -25,7 +25,7 @@ Screen::Screen(const char* fragshader) {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
-    fb = new Framebuffer(RESX, RESY, GL_RGBA, GL_REPEAT, GL_LINEAR);
+    fb = new Framebuffer(RESX, RESY, GL_RGBA, GL_REPEAT, GL_LINEAR, GL_UNSIGNED_BYTE, GL_RGBA);
 }
 
 void Screen::blend(Framebuffer* fb1, Framebuffer* fb2, float amount) {
