@@ -133,7 +133,6 @@ int main(void) {
 	Raycaster raycaster;
 	raycaster.setResolution(RESX, RESY);
     Framebuffer ray_fb1(RESX, RESY, GL_RGBA, GL_REPEAT, GL_LINEAR, GL_UNSIGNED_BYTE, GL_RGBA);
-    Framebuffer ray_fb2(RESX, RESY, GL_RGBA, GL_REPEAT, GL_LINEAR, GL_UNSIGNED_BYTE, GL_RGBA);
     Screen screen("shaders/screen/warpmap.glsl");
 
     ray_fb1.bind();

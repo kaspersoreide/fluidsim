@@ -26,7 +26,7 @@ Simulator::Simulator(int width, int height) : width(width), height(height) {
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
     for (int i = 0; i < 2; i++) {
-        fb[i] = new Framebuffer(width, height, GL_RGBA32F, GL_REPEAT, GL_LINEAR, GL_FLOAT, GL_RGBA);
+        fb[i] = new Framebuffer(width, height, GL_RGBA16F, GL_REPEAT, GL_LINEAR, GL_FLOAT, GL_RGBA);
         warp_fb[i] = new Framebuffer(width, height, GL_RG16F, GL_REPEAT, GL_LINEAR, GL_FLOAT, GL_RG);
     } 
 

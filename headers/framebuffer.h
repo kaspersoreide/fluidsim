@@ -2,13 +2,6 @@
 #include "GL/glew.h"
 #include "loadshaders.h"
 
-//helper enum for different texture types
-enum FramebufferType{
-    FB_LINEAR_CLAMP,
-    FB_NEAREST_REPEAT,
-    FB_LINEAR_REPEAT
-};
-
 class Framebuffer {
 public:
 	Framebuffer(GLsizei width, GLsizei height, GLint internalformat, GLint wrap_method, GLint interp, GLenum type, GLenum format);

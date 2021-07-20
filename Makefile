@@ -16,3 +16,6 @@ $(ODIR)/%.o: $(SDIR)/%.cpp
 
 $(OUT): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(OUT) $^ $(LIB) 
+
+clean:
+	rm obj/*.o application
