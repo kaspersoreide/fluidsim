@@ -44,3 +44,15 @@ void Screen::blend(Framebuffer* fb1, Framebuffer* fb2, float amount) {
     glActiveTexture(GL_TEXTURE0);
     fb->draw();
 }
+
+void Screen::renderWarped(Framebuffer* fb, Framebuffer* warpmap) {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, warpmap->texture);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, fb->texture);
+    glUseProgram(program);
+    glBindVertexArray(vertexArray);
+    glUniform1i(glGetUniformLocation(program, "warpmap"), 0);
+    glUniform1i(glGetUniformLocation(program, "img"), 1);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}

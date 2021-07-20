@@ -1,4 +1,5 @@
 #include "simulator.h"
+#include <algorithm>
 
 extern int RESX;
 extern int RESY;
@@ -45,14 +46,8 @@ void Simulator::render() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Simulator::swapBuffers(Framebuffer* fb1, Framebuffer* fb2) {
-    //swap framebuffers
-    Framebuffer *tmp = fb1;
-    fb1 = fb2;
-    fb2 = tmp;
-}
-
-void Simulator::compute(int iterations) {
+void Simulator::compute(int iterations, float warp_amount) {
+    glActiveTexture(GL_TEXTURE0);
     float dx = 1.0f / width;
     float dy = 1.0f / height;
     float dt = 0.01f;
@@ -66,8 +61,7 @@ void Simulator::compute(int iterations) {
     fb[1]->bind();
     glDrawArrays(GL_TRIANGLES, 0, 6);
     fb[1]->unbind();
-    swapBuffers(fb[0], fb[1]);
-    
+    std::swap(fb[0], fb[1]);
     /*
     glUseProgram(diffuseProgram);
     glUniform2f(glGetUniformLocation(diffuseProgram, "delta"), dx, dy);
@@ -95,7 +89,7 @@ void Simulator::compute(int iterations) {
         glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         fb[1]->unbind();
-        swapBuffers(fb[0], fb[1]);
+        std::swap(fb[0], fb[1]);
     }
     
     glUseProgram(projectProgram);
@@ -104,12 +98,11 @@ void Simulator::compute(int iterations) {
     glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     fb[1]->unbind();
-    swapBuffers(fb[0], fb[1]);
-    /*
+    std::swap(fb[0], fb[1]);
     //warp warpmap
     glUseProgram(warpProgram);
     glUniform1f(glGetUniformLocation(warpProgram, "dt"), dt);
-    glUniform1f(glGetUniformLocation(warpProgram, "weight"), 0.1f);
+    glUniform1f(glGetUniformLocation(warpProgram, "weight"), warp_amount);
     warp_fb[1]->bind();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
@@ -119,8 +112,7 @@ void Simulator::compute(int iterations) {
     glUniform1i(glGetUniformLocation(warpProgram, "warp_tex"), 1);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     warp_fb[1]->unbind();
-    
-*/
+    std::swap(warp_fb[0], warp_fb[1]);
 
 
     glViewport(0, 0, RESX, RESY);    

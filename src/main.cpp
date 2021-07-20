@@ -27,11 +27,11 @@ int RESX = 1280;
 int RESY = 720;
 
 GLFWwindow* window;
-bool closed = false, paused = true;
+bool closed = false, paused = false;
 Simulator* sim;
 Player* player;
 vec2 mouse;
-float blend_amount = 0.9f;
+float blend_amount = 0.1f;
 int iterations = 10;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -134,7 +134,7 @@ int main(void) {
 	raycaster.setResolution(RESX, RESY);
     Framebuffer ray_fb1(RESX, RESY, GL_RGBA, GL_REPEAT, GL_LINEAR, GL_UNSIGNED_BYTE, GL_RGBA);
     Framebuffer ray_fb2(RESX, RESY, GL_RGBA, GL_REPEAT, GL_LINEAR, GL_UNSIGNED_BYTE, GL_RGBA);
-    Screen screen("shaders/screen/blend.glsl");
+    Screen screen("shaders/screen/warpmap.glsl");
 
     ray_fb1.bind();
     player->move();
@@ -146,15 +146,15 @@ int main(void) {
         auto t1 = Time::now();
 		fsec t = t1 - t0;
         
-        if (!paused) sim->compute(iterations);
+        if (!paused) sim->compute(iterations, blend_amount);
         ray_fb1.bind();
         player->move();
         raycaster.setTime(t.count());
         raycaster.render(player->getModel());
         ray_fb1.unbind(); 
-        sim->advect(screen.fb, &ray_fb2);
+        //sim->advect(screen.fb, &ray_fb2);
         //float blend_amount = 0.9f;// * (0.5f * sinf(0.05f * t.count()) + 0.5f);
-        screen.blend(&ray_fb1, &ray_fb2, blend_amount);
+        screen.renderWarped(&ray_fb1, sim->warp_fb[0]);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

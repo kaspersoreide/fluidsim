@@ -79,7 +79,7 @@ vec2 curlVelocity() {
 
 void main() {
     vec2 u = center.xy;
-    vec2 force = 0.3 * vec2(0.0, sin(200.0 * uv.x));
+    vec2 force = 0.3 * vec2(0.0, sin(100.0 * uv.x));
     //if (distance(uv, vec2(0.05)) < 0.1) force = vec2(1.5, 0.0);
     //else if (distance(uv, vec2(0.8)) < 0.05) force = vec2(-22.5, 0.0);
     vec4 texthere = texture(tex, uv - u * dt);

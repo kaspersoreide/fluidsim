@@ -12,8 +12,7 @@ public:
     Simulator(int width, int height);
     int width, height;
     void render();
-    void compute(int iterations);
+    void compute(int iterations, float warp_amount);
     void advect(Framebuffer* back, Framebuffer* front);
     void setPixel(float x, float y, void *val);
-    void swapBuffers(Framebuffer* fb1, Framebuffer* fb2);
 };
