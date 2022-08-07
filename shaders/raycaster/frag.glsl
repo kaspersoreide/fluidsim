@@ -102,12 +102,17 @@ void main() {
 	vec2 mandelinfo;
 	float gravConstant = -0.01;
 	while (dist > 0.0001 && raysteps < 50) {
-		if (dir.y < 0.0 && raypos.y < 0.0) {
+		/*if (dir.y < 0.0 && raypos.y < 0.0) {
 			dir.y *= -1;
 			raysteps = 30;
 			raypos.y *= -1.0;
-		} 
-		dist = distSphere(raypos);
+		}*/
+        dist = distSphere(raypos);
+        if (dist < 0.01) {
+            vec3 n = vecToSphere(raypos);
+            dir = normalize(reflect(dir, normalize(n)));
+        } 
+		
 		//dir += gravConstant * vecToSphere(raypos) / (dist*dist);
 		//dir = normalize(dir);
 		raypos += dist * dir;

@@ -76,10 +76,16 @@ vec2 curlVelocity() {
     return 0.001 * delta.x * dt * center.w * vec2(grad.y, -grad.x);
 }
 
+vec2 swirly(vec2 force) {
+    return 0.03 * getCurl() * normalize(vec2(-force.y, force.x));
+}
+
 
 void main() {
     vec2 u = center.xy;
-    vec2 force = 0.3 * vec2(0.0, sin(100.0 * uv.x));
+    vec2 force = 0.2 * vec2(0.0, sin(50.0 * uv.x));
+    //force += randomVel();
+    force += swirly(force);
     //if (distance(uv, vec2(0.05)) < 0.1) force = vec2(1.5, 0.0);
     //else if (distance(uv, vec2(0.8)) < 0.05) force = vec2(-22.5, 0.0);
     vec4 texthere = texture(tex, uv - u * dt);

@@ -23,15 +23,15 @@ typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::duration<float> fsec;
 
 //resolution of window in pixels
-int RESX = 1280;
-int RESY = 720;
+int RESX = 1920;
+int RESY = 1080;
 
 GLFWwindow* window;
 bool closed = false, paused = false;
 Simulator* sim;
 Player* player;
 vec2 mouse;
-float blend_amount = 0.1f;
+float blend_amount = 0.003f;
 int iterations = 10;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
