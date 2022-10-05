@@ -1,1 +1,0 @@
-man kan bruke flere teksturer på fluidsimuleringen billig, for fartfeltet og gradientfeltet regnes uavhengig av mediumet. Kan da kanskje gjøre at alle teksturene kan smelte uavhengig og i sanntid? kan også smelte hele skjerm-framebufferen

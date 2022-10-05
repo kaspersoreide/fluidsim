@@ -11,7 +11,9 @@ public:
     Simulator(int width, int height);
     int width, height;
     void render();
-    void compute();
+    void compute(int iterations);
     void setPixel(float x, float y, void *val);
     void swapBuffers();
+    void setMousePos(float x, float y);
+    void setForceVector(float x, float y);
 };

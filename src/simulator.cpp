@@ -47,7 +47,7 @@ void Simulator::swapBuffers() {
     fb[0] = tmp;
 }
 
-void Simulator::compute() {
+void Simulator::compute(int iterations) {
     float dx = 1.0f / width;
     float dy = 1.0f / height;
     float dt = 0.01f;
@@ -63,7 +63,7 @@ void Simulator::compute() {
     fb[1]->unbind();
     swapBuffers();
     
-    /*
+    /* Skip diffusion (looks better)
     glUseProgram(diffuseProgram);
     glUniform2f(glGetUniformLocation(diffuseProgram, "delta"), dx, dy);
     // In the Poisson-pressure equation, x represents p, b represents U2207.GIF · w, a = -(dx)2, and b = 4. [1] 
@@ -71,13 +71,14 @@ void Simulator::compute() {
     float alpha = 0.0001 * dt * dx * dx / (width);
     glUniform1f(glGetUniformLocation(diffuseProgram, "alpha"), alpha);
     glUniform1f(glGetUniformLocation(diffuseProgram, "beta"), 4.0f + alpha);
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 2; i++) {
         fb[1]->bind();
         glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         fb[1]->unbind();
         swapBuffers();
-    }*/
+    }
+    */
 
     glUseProgram(pressureProgram);
     glUniform2f(glGetUniformLocation(pressureProgram, "delta"), dx, dy);
@@ -85,7 +86,7 @@ void Simulator::compute() {
     // For the viscous diffusion equation, both x and b represent u, a = (dx)2/ndt, and b = 4 + a.
     glUniform1f(glGetUniformLocation(pressureProgram, "alpha"), -dx*dx);
     glUniform1f(glGetUniformLocation(pressureProgram, "beta"), 4.0f);
-    for (int i = 0; i < 80; i++) {
+    for (int i = 0; i < iterations; i++) {
         fb[1]->bind();
         glBindTexture(GL_TEXTURE_2D, fb[0]->texture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -117,4 +118,14 @@ void Simulator::setPixel(float x, float y, void *val) {
     //glRasterPos2i(tx, ty);
     //glDrawPixels(1, 1, GL_RGBA, GL_FLOAT, val);
     //fb[0]->unbind();
+}
+
+void Simulator::setMousePos(float x, float y) {
+    glUseProgram(advectProgram);
+    glUniform2f(glGetUniformLocation(advectProgram, "mousePos"), x, y);
+}
+
+void Simulator::setForceVector(float x, float y) {
+    glUseProgram(advectProgram);
+    glUniform2f(glGetUniformLocation(advectProgram, "forceVector"), x, y);
 }

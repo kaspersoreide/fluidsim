@@ -14,19 +14,29 @@ using namespace std;
 using namespace glm;
 
 //resolution of window in pixels
-int RESX = 720;
-int RESY = 720;
+int RESX = 900;
+int RESY = 900;
 
 GLFWwindow* window;
-bool closed = false, paused = true;
+bool closed = false;
 Simulator* sim;
-vec2 mouse;
+vec2 mouse(0.5, 0.5);
+int simulatorIterations = 30;
+bool mouseIsPressed = false;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	
 	if (key == GLFW_KEY_ESCAPE) closed = true;
 
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) paused ^= 1;
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+		simulatorIterations += 5;
+		cout << "iterations: " << simulatorIterations << "\n";
+	}
+
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+		simulatorIterations -= 5;
+		cout << "iterations: " << simulatorIterations << "\n";
+	}
 
     if (key == GLFW_KEY_A && action == GLFW_PRESS) {
         float val[4] = {0.0, 0.0, 0.0, 1.0};
@@ -34,8 +44,30 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     }
 }
 
+void mouseClickCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+		if (action == GLFW_PRESS) {
+			mouseIsPressed = true;
+		}
+		else {
+			mouseIsPressed = false;
+			sim->setForceVector(0.0f, 0.0f);
+		}
+	}
+}
+
 void cursorCallback(GLFWwindow* window, double xpos, double ypos) {
-	mouse = vec2(static_cast<float>(xpos), static_cast<float>(ypos));
+	vec2 mouseNew = vec2(static_cast<float>(xpos) / RESX, 1.0f - static_cast<float>(ypos) / RESY);
+	vec2 forceVector = 10000.0f * (mouseNew - mouse);
+	mouse = mouseNew;
+
+	sim->setMousePos(mouse.x, mouse.y);
+	if (mouseIsPressed) {
+		sim->setForceVector(forceVector.x, forceVector.y);
+	} else {
+		sim->setForceVector(0.0f, 0.0f);
+	}
+	
 }
 
 int init() {
@@ -77,16 +109,17 @@ int init() {
 
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetCursorPosCallback(window, cursorCallback);
+	glfwSetMouseButtonCallback(window, mouseClickCallback);
 
 	return 0;
 }
 
 int main(void) {
 	if (init() == -1) return -1;
-	sim = new Simulator(256, 256);
+	sim = new Simulator(512, 512);
 	while (!glfwWindowShouldClose(window) && !closed) {
 		glClear(GL_COLOR_BUFFER_BIT);
-        if (!paused) sim->compute();
+        sim->compute(simulatorIterations);
 		sim->render();
 
 		glfwSwapBuffers(window);
