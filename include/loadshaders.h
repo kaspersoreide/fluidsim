@@ -1,15 +1,17 @@
 #include "GL/glew.h"
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
-void loadShaderCodeFromFile(const char* file, GLuint shader);
+void loadShaderCodeFromFile(const char *file, GLuint shader);
 
-void checkShaderError(GLuint shader, const char* name);
+void checkShaderError(GLuint shader, const char *name);
 
-GLuint loadShaders(const char* vertex, const char* frag);
+GLuint loadShaders(const char *vertex, const char *frag);
 
-GLuint loadTFBShader(const char* vertex, const GLchar** varyings, int numVaryings);
+GLuint loadTFBShader(const char *vertex, const GLchar **varyings,
+                     int numVaryings);
 
-GLuint loadGeometryShader(const char* vertex, const char* geo, const char* frag);
+GLuint loadGeometryShader(const char *vertex, const char *geo,
+                          const char *frag);
 
-GLuint loadComputeShader(const char* compute);
+GLuint loadComputeShader(const char *compute);
